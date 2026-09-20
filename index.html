@@ -60,7 +60,6 @@
   }
   .app{max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 
-  /* 消除所有按钮、可点击元素的点击阴影与高亮方块 */
   button, a {
     -webkit-tap-highlight-color: transparent;
     outline: none;
@@ -546,8 +545,8 @@
 
   var PROJECT = {
     name: 'BzStream',
-    repo: 'https://github.com/opentiny/icons',
-    issues: 'https://github.com/opentiny/icons/issues',
+    repo: 'https://guguli685-creator.github.io/BzStream/',
+    issues: 'https://guguli685-creator.github.io/BzStream//issues',
     license: 'MIT',
     version: '1.5.0',
     author: {
@@ -577,8 +576,7 @@
     'btn.copy': '复制', 'btn.copied': '已复制',
     'foot.time': '检测时间', 'foot.note': '全部计算均在本机完成，不上传任何数据',
     'nav.menu': '打开菜单',
-    'nav.help': '帮助', 'nav.oss': '开源', 'nav.lang': '语言', 'nav.theme': '主题', 'nav.retest': '重测',
-    'nav.theme.toDark': '切换到深色主题', 'nav.theme.toLight': '切换到浅色主题',
+    'nav.help': '帮助', 'nav.oss': '开源', 'nav.lang': '语言', 'nav.retest': '重测',
     'back': '返回', 'close': '关闭',
     'panel.menu': '功能菜单', 'panel.help': '帮助', 'panel.oss': '开源信息', 'panel.lang': '界面语言',
     'row.waiting': '等待检测…', 'row.timeoutNote': '未在预期时间内返回',
@@ -624,7 +622,7 @@
     'glcaps.na': '不可用', 'glcaps.noCtx': '无 WebGL 上下文',
     'glcaps.text': '{n} 项扩展 · 纹理上限 {m}', 'glcaps.empty': '扩展列表为空',
     'glcaps.emptyNote': '无任何 WebGL 扩展，典型软件渲染 / 无 GPU 环境',
-    'glcaps.note': '扩展集哈希 {h} · 高精度 {p} bit',
+    'glcaps.note': 'Extension hash {h} · highp {p} bit',
     'glcaps.lowTex': '纹理上限异常偏低（真实 GPU 通常 ≥ 8192）',
     'glcaps.lowPrec': '着色器无任何浮点精度，软件渲染特征',
     'glcaps.flagEmpty': 'WebGL 扩展列表为空', 'glcaps.flagTex': '纹理上限偏低 ({n})',
@@ -730,8 +728,7 @@
     'btn.copy': 'Copy', 'btn.copied': 'Copied',
     'foot.time': 'Scanned at', 'foot.note': 'Everything runs locally — no data is uploaded',
     'nav.menu': 'Open menu',
-    'nav.help': 'Help', 'nav.oss': 'Source', 'nav.lang': 'Language', 'nav.theme': 'Theme', 'nav.retest': 'Rescan',
-    'nav.theme.toDark': 'Switch to dark theme', 'nav.theme.toLight': 'Switch to light theme',
+    'nav.help': 'Help', 'nav.oss': 'Source', 'nav.lang': 'Language', 'nav.retest': 'Rescan',
     'back': 'Back', 'close': 'Close',
     'panel.menu': 'Menu', 'panel.help': 'Help', 'panel.oss': 'Open source', 'panel.lang': 'Interface language',
     'row.waiting': 'waiting…', 'row.timeoutNote': 'did not return in time',
@@ -916,7 +913,6 @@
   var root = document.documentElement;
   var themeMeta = document.querySelector('meta[name="theme-color"]');
 
-  // 初始化显式处理 SVG 图标状态的切换
   function updateThemeIcons(mode) {
     var sun = $('.sun-icon');
     var moon = $('.moon-icon');
@@ -1880,14 +1876,10 @@
 
   function buildPanel(kind) {
     if (!kind || kind === 'menu') {
-      var currentTheme = root.getAttribute('data-theme');
-      var themeLabel = currentTheme === 'dark' ? t('nav.theme.toLight') : t('nav.theme.toDark');
-      var themeIcon = currentTheme === 'dark' ? '#i-sun' : '#i-moon';
       return '<div class="menu-list">' +
         '<button class="menu-item" type="button" data-goto="help"><svg><use href="#i-help"/></svg><span>' + t('nav.help') + '</span></button>' +
         '<button class="menu-item" type="button" data-goto="oss"><svg><use href="#i-oss"/></svg><span>' + t('nav.oss') + '</span></button>' +
         '<button class="menu-item" type="button" data-goto="lang"><svg><use href="#i-lang"/></svg><span>' + t('nav.lang') + '</span></button>' +
-        '<button class="menu-item" type="button" data-action="toggle-theme"><svg><use href="' + themeIcon + '"/></svg><span>' + themeLabel + '</span></button>' +
         '<button class="menu-item" type="button" data-action="retest"><svg><use href="#i-retest"/></svg><span>' + t('nav.retest') + '</span></button>' +
       '</div>';
     }
@@ -1988,10 +1980,7 @@
     var actionBtn = e.target.closest('[data-action]');
     if (actionBtn) {
       var action = actionBtn.getAttribute('data-action');
-      if (action === 'toggle-theme') {
-        applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        setPanelBody(buildPanel(currentPanel), currentPanel === 'menu');
-      } else if (action === 'retest') {
+      if (action === 'retest') {
         closePanel();
         doRetest();
       }
@@ -2089,3 +2078,4 @@
 </script>
 </body>
 </html>
+这个
