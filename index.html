@@ -1,40 +1,42 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f3f5fa">
+<meta name="theme-color" content="#1b1b1f">
 <title>BzStream</title>
 <style>
   :root{
     color-scheme: light;
-    --bar-h: 58px;        /* 顶栏内容行高（固定） */
-    --header-h: 58px;     /* 顶栏总高（JS 实测，含安全区） */
-    --bg:#f3f5fa; --glow-1:rgba(59,99,243,.10); --glow-2:rgba(16,185,129,.08);
-    --card:#ffffff; --card-trans:rgba(255,255,255,.9);
-    --code-bg:#f7f9fc; --border:#e5e9f2; --text:#0f172a; --sub:#6b7a90;
-    --accent:#3b63f3; --accent-soft:rgba(59,99,243,.10);
-    --ok:#12a150; --ok-soft:rgba(18,161,80,.12);
-    --warn:#d97706; --warn-soft:rgba(217,119,6,.12);
-    --danger:#dc2626; --danger-soft:rgba(220,38,38,.10);
+    --bar-h: 64px;
+    --header-h: 64px;
+    --bg:#f3f5fa; --glow-1:rgba(59,99,243,.06); --glow-2:rgba(16,185,129,.05);
+    --card:#ffffff; --card-trans:rgba(255,255,255,.85);
+    --code-bg:#f7f9fc; --border:rgba(60,60,67,0.12); --text:#3c3f43; --sub:rgba(60, 63, 67, 0.7);
+    --accent:#3b82f6; --accent-soft:rgba(59,130,246,.10);
+    --ok:#10b981; --ok-soft:rgba(16,185,129,.12);
+    --warn:#f59e0b; --warn-soft:rgba(245,158,11,.12);
+    --danger:#ef4444; --danger-soft:rgba(239,68,68,.10);
     --ring-track:#e5e9f2;
-    --shadow:0 1px 2px rgba(16,24,40,.04), 0 10px 28px -18px rgba(16,24,40,.35);
-    --panel-shadow:0 26px 50px -26px rgba(16,24,40,.42);
+    --shadow:0 1px 2px rgba(0,0,0,.04), 0 10px 28px -18px rgba(0,0,0,.15);
+    --panel-shadow:0 26px 50px -26px rgba(0,0,0,.25);
     --radius:16px;
+    --vp-c-gray-soft: rgba(0, 0, 0, 0.05);
   }
   [data-theme="dark"]{
     color-scheme: dark;
-    --bg:#080c17; --glow-1:rgba(107,141,255,.14); --glow-2:rgba(52,211,153,.07);
-    --card:#121a2b; --card-trans:rgba(18,26,43,.92);
-    --code-bg:#0a1120; --border:#243049; --text:#e9eefb; --sub:#93a1bd;
-    --accent:#6b8dff; --accent-soft:rgba(107,141,255,.14);
+    --bg:#080c17; --glow-1:rgba(59,130,246,.10); --glow-2:rgba(16,185,129,.06);
+    --card:#121a2b; --card-trans:rgba(18,26,43,.88);
+    --code-bg:#0a1120; --border:rgba(255,255,255,.12); --text:rgba(255,255,255,.87); --sub:rgba(255,255,255,.6);
+    --accent:#3b82f6; --accent-soft:rgba(59,130,246,.15);
     --ok:#34d399; --ok-soft:rgba(52,211,153,.14);
     --warn:#fbbf24; --warn-soft:rgba(251,191,36,.14);
     --danger:#f87171; --danger-soft:rgba(248,113,113,.14);
     --ring-track:#243049;
     --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -20px rgba(0,0,0,.8);
     --panel-shadow:0 26px 54px -28px rgba(0,0,0,.85);
+    --vp-c-gray-soft: rgba(255, 255, 255, 0.1);
   }
 
   *{box-sizing:border-box}
@@ -44,7 +46,6 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
     -webkit-font-smoothing:antialiased;
     transition:background .25s ease,color .25s ease;
-    /* --header-h 已包含 safe-area-inset-top，此处不再重复相加 */
     padding:
       calc(var(--header-h) + 14px)
       calc(clamp(12px,2.6vw,28px) + env(safe-area-inset-right))
@@ -59,6 +60,15 @@
   }
   .app{max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 
+  /* 消除所有按钮、可点击元素的点击阴影与高亮方块 */
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+  button:focus, button:active, a:focus, a:active {
+    outline: none;
+  }
+
   /* ================= 顶栏 ================= */
   .topbar{
     position:fixed;top:0;left:0;right:0;z-index:60;
@@ -70,45 +80,74 @@
     transition:background .25s ease,border-color .25s ease;
   }
   .topbar-inner{
-    max-width:1160px;margin:0 auto;height:var(--bar-h);
+    max-width:1440px;margin:0 auto;height:var(--bar-h);
     padding:0 calc(clamp(12px,2.6vw,28px) + env(safe-area-inset-right)) 0
               calc(clamp(12px,2.6vw,28px) + env(safe-area-inset-left));
     display:flex;align-items:center;justify-content:space-between;gap:12px;
   }
 
-  .brand{display:flex;align-items:center;gap:10px;min-width:0}
-  .logo{
-    flex:none;width:34px;height:34px;border-radius:10px;
-    background:linear-gradient(135deg,var(--accent),#8b5cf6);
-    color:#fff;font-weight:800;font-size:.78rem;letter-spacing:.5px;
-    display:grid;place-items:center;box-shadow:0 8px 20px -10px var(--accent);
+  .brand-title{
+    display:flex;align-items:center;background:none;border:none;
+    color:var(--text);font-weight:600;font-size:16px;cursor:pointer;
+    padding:0;font-family:inherit;letter-spacing:-.01em;
   }
-  .brand h1{
-    margin:0;font-size:.95rem;font-weight:700;letter-spacing:-.01em;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+
+  .topbar-right{
+    display:flex;align-items:center;gap:12px;
   }
-  .brand p{
-    margin:2px 0 0;font-size:.71rem;color:var(--sub);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+
+  .theme-toggle {
+    background-color: var(--vp-c-gray-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    padding: 0;
   }
-  @media (max-width:560px){ .brand p{display:none} }
+  @media (hover:hover){ .theme-toggle:hover { border-color: var(--accent); } }
+  .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    display: block;
+  }
+  
+  .sun-icon { display: none !important; }
+  .moon-icon { display: block !important; }
+  
+  [data-theme="dark"] .sun-icon { display: block !important; }
+  [data-theme="dark"] .moon-icon { display: none !important; }
 
   .menu-btn{
-    width:40px;height:40px;border-radius:11px;flex:none;
+    width:36px;height:36px;border-radius:9999px;flex:none;
     border:1px solid var(--border);background:transparent;color:var(--text);
-    display:grid;place-items:center;cursor:pointer;padding:0;
-    transition:border-color .18s,color .18s,background .18s,transform .12s;
+    display:none;align-items:center;justify-content:center;cursor:pointer;padding:0;
+    transition:border-color .18s,color .18s,background .18s;
   }
-  .menu-btn:active{transform:scale(.94)}
+  @media (max-width:768px){ .menu-btn{display:flex} }
   .menu-btn[aria-expanded="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
   @media (hover:hover){ .menu-btn:hover{border-color:var(--accent);color:var(--accent)} }
-  .menu-btn svg{width:20px;height:20px;display:block}
+  
+  .menu-hamburger {
+    width: 18px; height: 14px; display: flex; flex-direction: column;
+    justify-content: space-between; align-items: center;
+  }
+  .menu-hamburger span {
+    display: block; width: 100%; height: 2px;
+    background-color: currentColor; border-radius: 2px;
+  }
 
-  /* ================= 下拉面板 ================= */
+  /* ================= 下拉菜单面板 ================= */
   .panel-wrap{position:absolute;top:100%;left:0;right:0;pointer-events:none}
-  @media (min-width:640px){
+  @media (min-width:768px){
     .panel-wrap{
-      max-width:1160px;margin:0 auto;display:flex;justify-content:flex-end;
+      max-width:1440px;margin:0 auto;display:flex;justify-content:flex-end;
       padding:0 calc(clamp(12px,2.6vw,28px) + env(safe-area-inset-right)) 0
                  calc(clamp(12px,2.6vw,28px) + env(safe-area-inset-left));
     }
@@ -126,7 +165,7 @@
     overflow:hidden;
   }
   .panel.show{opacity:1;visibility:visible;transform:translateY(0)}
-  @media (min-width:640px){ .panel{width:392px} }
+  @media (min-width:768px){ .panel{width:392px} }
 
   .panel-head{
     display:flex;align-items:center;gap:8px;
@@ -211,7 +250,6 @@
   .opt-note{font-size:.71rem;color:var(--sub);margin-left:auto;text-align:right}
   .opt-check{color:var(--accent);font-weight:800;flex:none}
 
-  /* ---------- 作者卡片（开源面板顶部） ---------- */
   .author{display:flex;align-items:center;gap:12px;margin:14px 0 12px}
   .panel-body .author:first-child{margin-top:2px}
   .author-avatar{
@@ -258,7 +296,6 @@
   }
   .backdrop.show{opacity:1;visibility:visible}
 
-  /* ---------- 内容卡片 ---------- */
   .grid{display:grid;grid-template-columns:1fr;gap:16px}
   .col{display:flex;flex-direction:column;gap:16px;min-width:0}
   @media (min-width:920px){
@@ -374,13 +411,8 @@
 </head>
 <body>
 
-<!-- 图标精灵：fill/stroke 必须显式声明，否则默认填充纯黑 -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
-    <symbol id="i-menu" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4 6h16M4 12h16M4 18h16"/>
-    </symbol>
     <symbol id="i-back" viewBox="0 0 20 20"
             fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
       <path d="M16.2 10H4.6"/><path d="M9.4 5.2 4.6 10l4.8 4.8"/>
@@ -425,22 +457,26 @@
   </defs>
 </svg>
 
-<!-- ================= 顶栏：左名称 + 右菜单 ================= -->
 <header class="topbar" id="topbar">
   <div class="topbar-inner">
-    <div class="brand">
-      <div class="logo">Bz</div>
-      <div>
-        <h1 data-i18n="app.title">BzStream</h1>
-        <p data-i18n="app.subtitle">移动端 / PC 端浏览器指纹检测与导出</p>
-      </div>
-    </div>
-
-    <button class="menu-btn" id="menu-toggle" type="button"
-            aria-haspopup="true" aria-expanded="false" aria-controls="panel"
-            data-i18n-aria="nav.menu">
-      <svg><use href="#i-menu"/></svg>
+    <button class="brand-title" id="brand-title" type="button">
+      <span>BzStream</span>
     </button>
+
+    <div class="topbar-right">
+      <button class="theme-toggle" id="theme-toggle-btn" type="button" aria-label="切换主题">
+        <svg class="sun-icon" viewBox="0 0 24 24"><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></svg>
+        <svg class="moon-icon" viewBox="0 0 24 24"><path d="M12.3 2.02c1.35-.17 2.74.15 3.89 1.02-.23.1-.45.22-.65.36-2.16 1.48-2.73 4.39-1.28 6.55s4.23 2.82 6.39 1.34c.2-.14.39-.3.57-.47.3 1.34.29 2.76-.05 4.09-.64 2.45-2.43 4.41-4.82 5.25-2.39.84-5.06.41-7.07-1.14-2.01-1.55-3.04-4.08-2.71-6.62.33-2.54 1.83-4.75 4.07-5.89 1.25-.64 2.65-.92 4.02-.69z"/></svg>
+      </button>
+
+      <button class="menu-btn" id="menu-toggle" type="button"
+              aria-haspopup="true" aria-expanded="false" aria-controls="panel"
+              data-i18n-aria="nav.menu">
+        <div class="menu-hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </button>
+    </div>
   </div>
 
   <div class="panel-wrap">
@@ -509,17 +545,15 @@
   var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
 
   var PROJECT = {
-    name: 'BzStream Fingerprint Board',
-    repo: 'https://github.com/guguli685-creator/BzStream',
-    issues: 'https://github.com/guguli685-creator/BzStream/issues',
+    name: 'BzStream',
+    repo: 'https://github.com/opentiny/icons',
+    issues: 'https://github.com/opentiny/icons/issues',
     license: 'MIT',
     version: '1.5.0',
     author: {
       name: 'Su Wanqing',
       profile: 'https://github.com/guguli685-creator',
-      // 头像主地址：jsDelivr 比 raw.githubusercontent 更快、更稳
       avatar: 'https://cdn.jsdelivr.net/gh/guguli685-creator/BzStream@main/Su%20Wanqing.png',
-      // 加载失败时逐级降级
       avatarFallbacks: [
         'https://raw.githubusercontent.com/guguli685-creator/BzStream/main/Su%20Wanqing.png',
         'https://github.com/guguli685-creator.png?size=160'
@@ -854,7 +888,6 @@
     return s;
   }
 
-  /* ================= 共享状态 ================= */
   var ring = $('#ring'), scoreEl = $('#risk-score');
   var verdictEl = $('#risk-verdict'), hintEl = $('#risk-hint'), pillEl = $('#flag-pill');
   var ta = $('#fp-json'), btn = $('#btn-copy');
@@ -874,8 +907,6 @@
 
   var topbar = $('#topbar');
   function syncHeaderHeight() {
-    // 测量 .topbar 的总高（含 padding-top 安全区），写入 --header-h；
-    // .topbar-inner 的高度由固定的 --bar-h 驱动，不会反过来影响测量结果
     var h = topbar.offsetHeight;
     if (h > 0) document.documentElement.style.setProperty('--header-h', h + 'px');
   }
@@ -885,15 +916,45 @@
   var root = document.documentElement;
   var themeMeta = document.querySelector('meta[name="theme-color"]');
 
+  // 初始化显式处理 SVG 图标状态的切换
+  function updateThemeIcons(mode) {
+    var sun = $('.sun-icon');
+    var moon = $('.moon-icon');
+    if (sun && moon) {
+      if (mode === 'dark') {
+        sun.style.display = 'block';
+        moon.style.display = 'none';
+      } else {
+        sun.style.display = 'none';
+        moon.style.display = 'block';
+      }
+    }
+  }
+
   function applyTheme(mode) {
     root.setAttribute('data-theme', mode);
-    if (themeMeta) themeMeta.setAttribute('content', mode === 'dark' ? '#080c17' : '#f3f5fa');
+    if (themeMeta) themeMeta.setAttribute('content', mode === 'dark' ? '#1b1b1f' : '#ffffff');
     try { localStorage.setItem('bz-theme', mode); } catch (e) {}
+    updateThemeIcons(mode);
   }
+
   var savedTheme = null;
   try { savedTheme = localStorage.getItem('bz-theme'); } catch (e) {}
   var prefersDark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+  var initialMode = savedTheme || (prefersDark ? 'dark' : 'light');
+  applyTheme(initialMode);
+
+  $('#theme-toggle-btn').addEventListener('click', function() {
+    var nextMode = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(nextMode);
+    if (currentPanel === 'menu') {
+      setPanelBody(buildPanel('menu'), true);
+    }
+  });
+
+  $('#brand-title').addEventListener('click', function() {
+    doRetest();
+  });
 
   function resolve(v) { return (typeof v === 'function') ? v() : v; }
 
@@ -1115,9 +1176,6 @@
     }
   }
 
-  /* ============================================================
-     检测
-     ============================================================ */
   function runChecks() {
     var run = ++runToken;
 
@@ -1753,9 +1811,6 @@
     }, 5000);
   }
 
-  /* ============================================================
-     顶栏下拉面板
-     ============================================================ */
   var backdrop = $('#backdrop'), panel = $('#panel');
   var panelTitle = $('#panel-title'), panelBody = $('#panel-body');
   var panelBack = $('#panel-back'), menuToggle = $('#menu-toggle');
@@ -1771,7 +1826,6 @@
     bindAvatarFallback();
   }
 
-  /* ---------- 作者信息卡 ---------- */
   function escHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -1808,7 +1862,6 @@
       }).join('') + '</div>';
   }
 
-  // 头像加载失败时逐级降级，全部失败则移除 img，露出底下的首字母底色
   function bindAvatarFallback() {
     var img = panelBody.querySelector('[data-avatar-img]');
     if (!img) return;
@@ -1914,7 +1967,6 @@
   panelBack.addEventListener('click', function () { openPanel('menu'); });
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape' || !currentPanel) return;
-    // Esc 在子页面时先回菜单，再按一次才关闭
     if (currentPanel === 'menu') closePanel();
     else openPanel('menu');
   });
@@ -1947,7 +1999,7 @@
   });
 
   function doRetest() {
-    var ico = menuToggle.querySelector('svg');
+    var ico = menuToggle.querySelector('.menu-hamburger');
     if (ico && !reduceMotion) {
       ico.style.transition = 'transform .6s ease';
       ico.style.transform = 'rotate(360deg)';
@@ -1958,9 +2010,6 @@
     runChecks();
   }
 
-  /* ============================================================
-     文案 / 语言
-     ============================================================ */
   function applyStaticText() {
     $$('[data-i18n]').forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n')); });
     $$('[data-i18n-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria'))); });
@@ -1983,9 +2032,6 @@
     finalize();
   }
 
-  /* ============================================================
-     启动 / 重测
-     ============================================================ */
   function resetAll() {
     runToken++;
     if (guardTimer) { clearTimeout(guardTimer); guardTimer = null; }
@@ -2005,7 +2051,7 @@
     finalize();
   }
 
-  /* ---------- 复制 JSON ---------- */
+  var btn = $('#btn-copy');
   function markCopied() {
     btn.textContent = t('btn.copied');
     btn.classList.add('done');
@@ -2032,7 +2078,6 @@
     }
   });
 
-  /* ---------- 初始化 ---------- */
   root.setAttribute('lang', locale);
   applyStaticText();
   hintEl.textContent = t('hint.init');
